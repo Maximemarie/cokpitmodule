@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Météo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #bento-container {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+
+        #weather-widget {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="bento-container">
+        <h1>Météo Widget</h1>
+        <div id="weather-widget">
+            <p>Chargement...</p>
+        </div>
+    </div>
+
+    <script>
+        // Remplace avec l'URL de ton API
+        const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=45.5088&longitude=-73.5878&current=temperature_2m,rain,snowfall&hourly=temperature_2m';
+
+        // Fonction pour obtenir les données météo depuis l'API
+        async function getWeatherData() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données météo', error);
+            }
+        }
+
+        // Fonction pour afficher les données météo dans le widget
+        async function displayWeather() {
+            const weatherWidget = document.getElementById('weather-widget');
+            const data = await getWeatherData();
+
+            if (data) {
+                const temperature = data.current.temperature_2m;
+                const rain = data.current.rain || 0;
+                const snowfall = data.current.snowfall || 0;
+
+                weatherWidget.innerHTML = `<p>Il fait actuellement ${temperature}°C. Précipitations : ${rain} mm. Chutes de neige : ${snowfall} mm.</p>`;
+            } else {
+                weatherWidget.innerHTML = '<p>Impossible de récupérer les données météo.</p>';
+            }
+        }
+
+        // Appelle la fonction pour afficher les données météo au chargement de la page
+        displayWeather();
+    </script>
+</body>
+</html>
